@@ -1,8 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const morgan = require('morgan');
 
 const app = express();
 app.use(bodyParser.json());
+app.use(morgan('tiny'));
 
 let people = [
   {
@@ -97,6 +99,12 @@ const getNewId = () => {
 
   return maxId + 1;
 };
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' });
+};
+
+app.use(unknownEndpoint);
 
 const PORT = 3001;
 app.listen(PORT, () => {
