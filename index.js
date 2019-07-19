@@ -4,29 +4,41 @@ const bodyParser = require('body-parser');
 const app = express();
 app.use(bodyParser.json());
 
-let notes = [
+let people = [
   {
-    id: 1,
-    content: 'HTML is easy',
-    date: '2019-05-30T17:30:31.098Z',
-    important: true
+    name: 'Arto Hellas',
+    phoneNumber: '040-123456',
+    id: 1
   },
   {
-    id: 2,
-    content: 'Browser can execute only Javascript',
-    date: '2019-05-30T18:39:34.091Z',
-    important: false
+    name: 'Ada Lovelace',
+    phoneNumber: '39-44-5323523',
+    id: 2
   },
   {
-    id: 3,
-    content: 'GET and POST are the most important methods of HTTP protocol',
-    date: '2019-05-30T19:20:14.298Z',
-    important: true
+    name: 'Dan Abramov',
+    phoneNumber: '12-43-234345',
+    id: 3
+  },
+  {
+    name: 'Mary Poppendieck',
+    phoneNumber: '39-23-6423122',
+    id: 4
   }
 ];
 
 app.get('/api/persons', (req, res) => {
-  res.json(notes);
+  res.json(people);
+});
+
+app.get('/info', (req, res) => {
+  res.send(`
+        <div>
+        Phonebook contains ${people.length} people
+        <br />
+        ${new Date()}
+        </div>
+    `);
 });
 
 const PORT = 3001;
