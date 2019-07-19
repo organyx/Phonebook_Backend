@@ -42,18 +42,26 @@ app.get('/info', (req, res) => {
 });
 
 app.post('/api/people/', (req, res) => {
-  const maxId = people.length > 0 ? Math.max(...people.map(p => p.id)) : 0;
-
   const body = req.body;
-  console.log(body);
+  //   console.log('Body', body);
   if (!body) {
     return res.status(400).json({
       error: 'content missing'
     });
   }
 
+  if (body.name === '' || undefined || (body.phoneNumber === '' || undefined)) {
+    return res.status(400).json({ error: 'some information is missing' });
+  }
+
+  const personExists = people.findIndex(person => person.name === body.name);
+
+  if (personExists > 0) {
+    return res.status(400).json({ error: 'name already exists' });
+  }
+
   const person = {
-    id: maxId + 1,
+    id: getNewId(),
     name: body.name,
     phoneNumber: body.phoneNumber
   };
@@ -83,6 +91,12 @@ app.delete('/api/people/:id', (req, res) => {
 
   res.status(204).end();
 });
+
+const getNewId = () => {
+  const maxId = people.length > 0 ? Math.max(...people.map(p => p.id)) : 0;
+
+  return maxId + 1;
+};
 
 const PORT = 3001;
 app.listen(PORT, () => {
