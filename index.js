@@ -4,7 +4,28 @@ const morgan = require('morgan');
 
 const app = express();
 app.use(bodyParser.json());
-app.use(morgan('tiny'));
+
+morgan.token(
+  'postBody',
+  (getPostBody = req => {
+    return req.postBody;
+  })
+);
+
+function assignPostBody(req, res, next) {
+  //   console.log(req.method === 'POST');
+  if (req.method === 'POST') {
+    req.postBody = JSON.stringify(req.body);
+  }
+  next();
+}
+
+app.use(assignPostBody);
+app.use(
+  morgan(
+    ':method :url :status :res[content-length] - :response-time ms :postBody'
+  )
+);
 
 let people = [
   {
