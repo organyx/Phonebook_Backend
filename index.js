@@ -41,6 +41,27 @@ app.get('/info', (req, res) => {
     `);
 });
 
+app.post('/api/people/', (req, res) => {
+  const maxId = people.length > 0 ? Math.max(...people.map(p => p.id)) : 0;
+
+  const body = req.body;
+  console.log(body);
+  if (!body) {
+    return res.status(400).json({
+      error: 'content missing'
+    });
+  }
+
+  const person = {
+    id: maxId + 1,
+    name: body.name,
+    phoneNumber: body.phoneNumber
+  };
+
+  people = people.concat(person);
+  res.json(person);
+});
+
 app.get('/api/people/:id', (req, res) => {
   let id = Number(req.params.id);
   //   console.log(id);
