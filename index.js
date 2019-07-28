@@ -57,7 +57,7 @@ app.get('/api/people', (req, res) => {
   res.json(people);
 });
 
-app.get('/info', (req, res) => {
+app.get('/api/info', (req, res) => {
   res.send(`
         <div>
         Phonebook contains ${people.length} people
