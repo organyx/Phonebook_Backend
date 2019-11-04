@@ -113,20 +113,47 @@ app.post('/api/people/', (req, res) => {
   });
 });
 
-app.get('/api/people/:id', (req, res) => {
+app.get('/api/people/:id', (req, res, next) => {
   let id = req.params.id;
   Person.findById(id).then(person => {
-    res.json(person.toJSON())
+    if (person) {
+      res.json(person.toJSON())
+    }
+    else {
+      res.status(404).end()
+    }
+  }).catch(err => {
+    // console.log(err);
+    // res.status(400).send({ error: 'malformatted id' })
+    next(err)
   })
 
 });
 
-app.delete('/api/people/:id', (req, res) => {
-  let id = Number(req.params.id);
-  people = people.filter(person => person.id !== id);
+app.delete('/api/people/:id', (req, res, next) => {
+  // let id = Number(req.params.id);
+  // people = people.filter(person => person.id !== id);
 
-  res.status(204).end();
+  // res.status(204).end();
+  Person.findByIdAndRemove(req.params.id)
+    .then(result => {
+      res.status(204).end()
+    })
+    .catch(error => next(error))
 });
+
+app.put('/api/people/:id', (req, res, next) => {
+  const body = req.body
+  const person = {
+    name: body.name,
+    phoneNumber: body.phoneNumber
+  }
+
+  Person.findByIdAndUpdate(req.params.id, person, { new: true })
+    .then(updatedPerson => {
+      res.json(updatedPerson.toJSON())
+    }).catch(err => next(err))
+})
 
 const getNewId = () => {
   const maxId = people.length > 0 ? Math.max(...people.map(p => p.id)) : 0;
@@ -139,6 +166,18 @@ const unknownEndpoint = (request, response) => {
 };
 
 app.use(unknownEndpoint);
+
+const errorHandler = (err, req, res, next) => {
+  console.error(err.message)
+
+  if (err.name === 'CastError' && err.kind === 'ObjectId') {
+    return res.status(400).send({ err: 'malformatted id' })
+  }
+
+  next(err)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
