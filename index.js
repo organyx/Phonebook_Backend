@@ -2,11 +2,14 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const cors = require('cors');
+require('dotenv').config()
+const Person = require('./models/person')
 
 const app = express();
 app.use(express.static('build'));
 app.use(cors());
 app.use(bodyParser.json());
+
 
 morgan.token(
   'postBody',
@@ -54,7 +57,15 @@ let people = [
 ];
 
 app.get('/api/people', (req, res) => {
-  res.json(people);
+  Person.find({}).then(result => {
+    // console.log('phonebook:')
+    result.forEach(person => {
+      console.log(`${person.name} ${person.phoneNumber}`)
+    })
+    // console.log('result', result)
+    res.json(result)
+  })
+  // res.json(people);
 });
 
 app.get('/api/info', (req, res) => {
