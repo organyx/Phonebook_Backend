@@ -62,20 +62,23 @@ app.get('/api/people', (req, res) => {
     result.forEach(person => {
       console.log(`${person.name} ${person.phoneNumber}`)
     })
-    // console.log('result', result)
     res.json(result)
   })
-  // res.json(people);
 });
 
 app.get('/api/info', (req, res) => {
-  res.send(`
+  Person.find({}).then(result => {
+    // console.log('phonebook:')
+    // console.log('result', result.length)
+    res.send(`
         <div>
-        Phonebook contains ${people.length} people
+        Phonebook contains ${result.length} people
         <br />
         ${new Date()}
         </div>
     `);
+  })
+
 });
 
 app.post('/api/people/', (req, res) => {
@@ -97,29 +100,25 @@ app.post('/api/people/', (req, res) => {
     return res.status(400).json({ error: 'name already exists' });
   }
 
-  const person = {
-    id: getNewId(),
-    name: body.name,
-    phoneNumber: body.phoneNumber
-  };
 
-  people = people.concat(person);
-  res.json(person);
+  const person = new Person({
+    name: req.body.name,
+    phoneNumber: req.body.phoneNumber
+  });
+
+  person.save().then(() => {
+    res.json(person.toJSON());
+  }).catch(err => {
+    console.log('err', err)
+  });
 });
 
 app.get('/api/people/:id', (req, res) => {
-  let id = Number(req.params.id);
-  //   console.log(id);
-  let person = people.find(p => {
-    // console.log(p.id, typeof p.id, id, typeof id, p.id === id);
-    return p.id === id;
-  });
-  console.log(person);
-  if (person) {
-    res.json(person);
-  } else {
-    res.status(404).end();
-  }
+  let id = req.params.id;
+  Person.findById(id).then(person => {
+    res.json(person.toJSON())
+  })
+
 });
 
 app.delete('/api/people/:id', (req, res) => {
