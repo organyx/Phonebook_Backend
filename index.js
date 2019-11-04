@@ -58,7 +58,6 @@ let people = [
 
 app.get('/api/people', (req, res) => {
   Person.find({}).then(result => {
-    // console.log('phonebook:')
     result.forEach(person => {
       console.log(`${person.name} ${person.phoneNumber}`)
     })
@@ -68,8 +67,6 @@ app.get('/api/people', (req, res) => {
 
 app.get('/api/info', (req, res) => {
   Person.find({}).then(result => {
-    // console.log('phonebook:')
-    // console.log('result', result.length)
     res.send(`
         <div>
         Phonebook contains ${result.length} people
@@ -83,7 +80,6 @@ app.get('/api/info', (req, res) => {
 
 app.post('/api/people/', (req, res) => {
   const body = req.body;
-  //   console.log('Body', body);
   if (!body) {
     return res.status(400).json({
       error: 'content missing'
@@ -93,13 +89,6 @@ app.post('/api/people/', (req, res) => {
   if (body.name === '' || undefined || (body.phoneNumber === '' || undefined)) {
     return res.status(400).json({ error: 'some information is missing' });
   }
-
-  const personExists = people.findIndex(person => person.name === body.name);
-
-  if (personExists > 0) {
-    return res.status(400).json({ error: 'name already exists' });
-  }
-
 
   const person = new Person({
     name: req.body.name,
@@ -123,18 +112,12 @@ app.get('/api/people/:id', (req, res, next) => {
       res.status(404).end()
     }
   }).catch(err => {
-    // console.log(err);
-    // res.status(400).send({ error: 'malformatted id' })
     next(err)
   })
 
 });
 
 app.delete('/api/people/:id', (req, res, next) => {
-  // let id = Number(req.params.id);
-  // people = people.filter(person => person.id !== id);
-
-  // res.status(204).end();
   Person.findByIdAndRemove(req.params.id)
     .then(result => {
       res.status(204).end()
