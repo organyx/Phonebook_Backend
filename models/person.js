@@ -15,12 +15,13 @@ const personSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        minlength: 3
     },
     phoneNumber: {
         type: String,
         required: true,
-        minlength: 10
+        minlength: 8
     },
 })
 
